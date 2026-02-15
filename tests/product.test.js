@@ -1,3 +1,13 @@
+jest.mock('../src/models/Product', () => ({
+  find: jest.fn(),
+  findById: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
+  prototype: {
+    save: jest.fn(),
+    deleteOne: jest.fn()
+  }
+}));
+
 // Generate Jest tests for product routes using supertest
 const request = require('supertest');
 const app = require('../src/app'); 
@@ -10,7 +20,7 @@ describe('Product endpoints', () => {
   };
 
   beforeAll(async () => {
-    // Registrar usuario (por si no existe)
+    // Registrar usuario para obtener token
     await request(app)
       .post('/api/auth/register')
       .send(testUser);

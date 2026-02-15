@@ -1,3 +1,10 @@
+jest.mock('../src/models/User', () => ({
+  findOne: jest.fn(),
+  prototype: {
+    save: jest.fn()
+  }
+}));
+
 const request = require('supertest');
 const app = require('../src/app');
 
