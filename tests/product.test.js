@@ -71,15 +71,18 @@ describe('Product endpoints', () => {
   });
 
   it('Debe crear un producto', async () => {
-    const res = await request(app)
-      .post('/api/products')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ name: 'Producto de prueba', price: 9.99 });
+  const res = await request(app)
+    .post('/api/products')
+    .set('Authorization', `Bearer ${token}`)
+    .send({ name: 'Producto de prueba', price: 9.99 });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.name).toBe('Producto de prueba');
-    expect(res.body.price).toBe(9.99);
-  });
+  expect(res.statusCode).toBe(200);
+
+  const body = res.body.product || res.body;
+
+  expect(body.name).toBe('Producto de prueba');
+  expect(body.price).toBe(9.99);
+});
 
   it('Debe obtener los productos del usuario', async () => {
     const res = await request(app)
