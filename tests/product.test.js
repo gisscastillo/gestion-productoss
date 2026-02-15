@@ -1,31 +1,45 @@
-jest.mock('../src/models/Product', () => ({
-  find: jest.fn(),
-  findById: jest.fn(),
-  findByIdAndUpdate: jest.fn(),
-  prototype: {
-    save: jest.fn(),
-    deleteOne: jest.fn()
-  }
-}));
+jest.mock('../src/models/User', () => {
+  return jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue(true)
+  }));
+});
 
-// Generate Jest tests for product routes using supertest
+const User = require('../src/models/User');
+User.findOne = jest.fn();
+
+jest.mock('../src/models/Product', () => {
+  return jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue(true),
+    deleteOne: jest.fn().mockResolvedValue(true)
+  }));
+});
+
+const Product = require('../src/models/Product');
+Product.find = jest.fn().mockResolvedValue([]);
+Product.findById = jest.fn();
+Product.findByIdAndUpdate = jest.fn();
+
 const request = require('supertest');
-const app = require('../src/app'); 
-// Generate Jest tests for protected product routes using supertest
+const bcrypt = require('bcryptjs');
+const app = require('../src/app');
+
 describe('Product endpoints', () => {
   let token;
-    const testUser = {
-    email: 'productjest@test.com',
+
+  const testUser = {
+    email: `product${Date.now()}@test.com`,
     password: '123456'
   };
 
   beforeAll(async () => {
-    // Registrar usuario para obtener token
-    await request(app)
-      .post('/api/auth/register')
-      .send(testUser);
 
-    // Login para obtener token
+    const hashed = await bcrypt.hash(testUser.password, 10);
+
+    User.findOne.mockResolvedValue({
+      id: '123',
+      password: hashed
+    });
+
     const res = await request(app)
       .post('/api/auth/login')
       .send(testUser);
@@ -33,10 +47,12 @@ describe('Product endpoints', () => {
     token = res.body.token;
   });
 
-  it('Debe negar acceso sin token', async () => {
-    const res = await request(app)
-      .get('/api/products');
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
+  it('Debe negar acceso sin token', async () => {
+    const res = await request(app).get('/api/products');
     expect(res.statusCode).toBe(401);
   });
 
