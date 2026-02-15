@@ -1,3 +1,4 @@
+process.env.JWT_SECRET = 'testsecret';
 jest.mock('../src/models/User', () => {
   return jest.fn().mockImplementation(() => ({
     save: jest.fn().mockResolvedValue(true)

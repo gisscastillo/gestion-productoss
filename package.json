@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test JWT_SECRET=testsecret jest"
   },
   "jest": {
   "testEnvironment": "node"
