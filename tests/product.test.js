@@ -1,14 +1,21 @@
 process.env.JWT_SECRET = 'testsecret';
 jest.mock('../src/models/Product', () => {
-  return function Product(data) {
+  const ProductMock = function (data) {
     return {
       ...data,
       save: jest.fn().mockResolvedValue({
-        ...data
+        ...data,
+        _id: 'mockedid'
       }),
       deleteOne: jest.fn().mockResolvedValue(true)
     };
   };
+
+  ProductMock.find = jest.fn().mockResolvedValue([]);
+  ProductMock.findById = jest.fn();
+  ProductMock.findByIdAndUpdate = jest.fn();
+
+  return ProductMock;
 });
 
 const User = require('../src/models/User');
